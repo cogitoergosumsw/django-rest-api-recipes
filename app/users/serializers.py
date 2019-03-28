@@ -25,8 +25,22 @@ class UserSerializer(serializers.ModelSerializer):
         :param validated_data:
         :return:
         """
-
         return get_user_model().objects.create_user(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        update a user, setting the password correctly and return it
+        :param instance:
+        :param validated_data:
+        :return:
+        """
+        password = validated_data.pop('password', None)
+        user = super().update(instance, validated_data)
+        if password:
+            user.set_password(password)
+            user.save()
+
+        return user
 
 
 class AuthTokenSerializer(serializers.Serializer):
